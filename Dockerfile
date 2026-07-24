@@ -14,6 +14,7 @@ RUN apk add --no-cache \
     libzip-dev \
     icu-dev \
     bash \
+    netcat-openbsd \
     nodejs \
     npm \
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
@@ -24,10 +25,8 @@ WORKDIR /var/www/html
 
 COPY composer.json composer.lock ./
 COPY package.json package-lock.json* ./
-COPY .env.example ./.env.example
 
-RUN if [ ! -f .env ]; then cp .env.example .env; fi \
-    && composer install --no-interaction --prefer-dist --no-scripts \
+RUN composer install --no-interaction --prefer-dist --no-scripts \
     && npm install --no-audit --no-fund
 
 COPY . .
@@ -38,7 +37,11 @@ RUN composer dump-autoload --optimize \
     && chown -R www-data:www-data storage bootstrap/cache public
 
 COPY nginx/default.conf /etc/nginx/http.d/default.conf
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint
+
+RUN chmod +x /usr/local/bin/entrypoint
 
 EXPOSE 80
 
-CMD sh -c "php artisan key:generate --force --no-interaction || true; php artisan migrate --force || true; php artisan storage:link || true; php artisan optimize:clear || true; php artisan config:cache; php artisan route:cache; php artisan view:cache; php-fpm -D; nginx -g 'daemon off;'"
+ENTRYPOINT ["/usr/local/bin/entrypoint"]
+CMD ["sh", "-c", "php-fpm -D; nginx -g 'daemon off;'"]
