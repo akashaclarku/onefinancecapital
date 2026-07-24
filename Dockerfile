@@ -1,6 +1,7 @@
 FROM php:8.2-fpm-alpine AS base
 
 RUN apk add --no-cache \
+    ca-certificates \
     nginx \
     curl \
     git \

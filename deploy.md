@@ -32,12 +32,16 @@ docker --version
 docker compose version
 ```
 
-## 2. Clone the repository
+## 2. Go to the project folder
 
 ```bash
-cd /var/www
-sudo git clone https://github.com/your-repo/geet.git
-cd geet
+cd /home/ubuntu/codebase/onefinancecapital
+```
+
+If you need to update the code from Git:
+
+```bash
+git pull origin main
 ```
 
 ## 3. Configure environment variables
@@ -60,7 +64,7 @@ Use values similar to the following:
 APP_NAME="One Capital Finance"
 APP_ENV=production
 APP_DEBUG=false
-APP_URL=https://onefinancecapital.com
+APP_URL=https://onecapitalloans.com
 
 DB_CONNECTION=mysql
 DB_HOST=db
@@ -89,7 +93,7 @@ docker compose exec app php artisan optimize
 
 ## 6. Domain and HTTPS setup
 
-Point the DNS A record for `onefinancecapital.com` and `www.onefinancecapital.com` to your EC2 public IP.
+Point the DNS A record for `onecapitalloans.com` and `www.onecapitalloans.com` to your EC2 public IP.
 
 If you want HTTPS, install Nginx and Certbot on the EC2 host and proxy traffic to the Docker container:
 
@@ -102,7 +106,7 @@ Example host Nginx config:
 ```nginx
 server {
     listen 80;
-    server_name onefinancecapital.com www.onefinancecapital.com;
+    server_name onecapitalloans.com www.onecapitalloans.com;
     location / {
         proxy_pass http://127.0.0.1:80;
         proxy_set_header Host $host;
@@ -116,7 +120,7 @@ server {
 Then enable SSL:
 
 ```bash
-sudo certbot --nginx -d onefinancecapital.com -d www.onefinancecapital.com
+sudo certbot --nginx -d onecapitalloans.com -d www.onecapitalloans.com
 ```
 
 ## 7. Useful commands

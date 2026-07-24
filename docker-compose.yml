@@ -10,7 +10,7 @@ services:
       APP_NAME: One Capital Finance
       APP_ENV: production
       APP_DEBUG: "false"
-      APP_URL: https://onefinancecapital.com
+      APP_URL: https://onecapitalloans.com
       DB_CONNECTION: mysql
       DB_HOST: db
       DB_PORT: 3306
