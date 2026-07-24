@@ -94,6 +94,14 @@ DB_PASSWORD=geet
 docker compose up --build -d
 ```
 
+If you are using the app container’s built-in Nginx, make sure the project config is copied into the container:
+
+```bash
+docker compose exec app sh -c 'cp /var/www/html/nginx/default.conf /etc/nginx/http.d/default.conf'
+docker compose exec app sh -c 'nginx -t'
+docker compose exec app sh -c 'nginx -s reload || true'
+```
+
 ## 5. Run Laravel setup inside the app container
 
 ```bash
@@ -159,7 +167,10 @@ Then start and verify Nginx:
 sudo systemctl enable nginx
 sudo systemctl start nginx
 sudo nginx -t
+sudo ss -tulnp | grep -E ':80|:443|:8080'
 ```
+
+Also verify that the EC2 security group allows inbound TCP 80 and 443 traffic.
 
 Then enable SSL:
 
