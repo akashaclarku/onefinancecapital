@@ -1,7 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\LeadController as AdminLeadController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\ProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -49,6 +49,11 @@ Route::get('/bank-authentication', function () {
 // Route::get('/bank_auth_form/{image}', Route::post('/apply-now', [HomeController::class,'saveApply']);
 Route::get('/bank_auth_form/{image?}', [HomeController::class,'bank_auth_form']);
 Route::post('/bank_auth_form/{image?}', [HomeController::class,'saveApplyOne']);
+
+Route::middleware(['admin'])->prefix('admin')->group(function () {
+    Route::get('/leads', [AdminLeadController::class, 'index'])->name('admin.leads.index');
+    Route::post('/leads/send-to', [AdminLeadController::class, 'updateLeadSendTo'])->name('admin.leads.send-to.update');
+});
 
 
 
