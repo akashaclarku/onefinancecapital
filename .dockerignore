@@ -5,5 +5,6 @@ vendor
 storage/logs/*
 bootstrap/cache/*
 .env
-.env.*
+.env.local
+.env.*.local
 README.md

@@ -52,6 +52,18 @@ Create a production environment file:
 cp .env.example .env
 ```
 
+Then make sure the container can see it by copying it into the app directory used by Docker:
+
+```bash
+cp .env /home/ubuntu/codebase/onefinancecapital/.env
+```
+
+If the file is missing inside the container, create it there as well:
+
+```bash
+docker compose exec app sh -c 'cp /var/www/html/.env.example /var/www/html/.env || true'
+```
+
 Update the values for your production domain and database:
 
 ```bash
@@ -85,6 +97,7 @@ docker compose up --build -d
 ## 5. Run Laravel setup inside the app container
 
 ```bash
+docker compose exec app sh -c 'test -f /var/www/html/.env || cp /var/www/html/.env.example /var/www/html/.env'
 docker compose exec app php artisan key:generate --force
 docker compose exec app php artisan migrate --force
 docker compose exec app php artisan storage:link

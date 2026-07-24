@@ -32,6 +32,7 @@ services:
       db:
         condition: service_healthy
     volumes:
+      - ./.env:/var/www/html/.env:ro
       - laravel_storage:/var/www/html/storage
       - laravel_bootstrap_cache:/var/www/html/bootstrap/cache
     networks:

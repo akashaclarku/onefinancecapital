@@ -24,8 +24,10 @@ WORKDIR /var/www/html
 
 COPY composer.json composer.lock ./
 COPY package.json package-lock.json* ./
+COPY .env.example ./.env.example
 
-RUN composer install --no-interaction --prefer-dist --no-scripts \
+RUN if [ ! -f .env ]; then cp .env.example .env; fi \
+    && composer install --no-interaction --prefer-dist --no-scripts \
     && npm install --no-audit --no-fund
 
 COPY . .
