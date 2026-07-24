@@ -20,13 +20,9 @@ services:
       SESSION_DRIVER: database
       QUEUE_CONNECTION: database
       CACHE_STORE: database
-      MAIL_MAILER: smtp
-      MAIL_HOST: mail.onefinancecapital.com
-      MAIL_PORT: 587
-      MAIL_USERNAME: ""
-      MAIL_PASSWORD: ""
-      MAIL_FROM_ADDRESS: no-reply@onefinancecapital.com
-      MAIL_FROM_NAME: One Capital Finance
+      MAIL_MAILER: ${MAIL_MAILER:-resend}
+      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-no-reply@onecapitalloans.com}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME:-One Capital Finance}
       RESEND_KEY: ${RESEND_KEY}
       ADMIN_PANEL_USERNAME: ${ADMIN_PANEL_USERNAME}
       ADMIN_PANEL_PASSWORD: ${ADMIN_PANEL_PASSWORD}
