@@ -1,188 +1,82 @@
-# Admin Deployment Guide (EC2 + Docker)
+# Admin-Only Post Deployment Steps
 
-This guide includes all commands to deploy the project on EC2, configure environment values, run migrations, and verify the admin lead panel setup.
+Use this only for admin panel and lead email setup on an already deployed server.
 
-## 1) Connect to EC2 and install Docker
-
-```bash
-ssh -i /path/to/your-key.pem ubuntu@YOUR_EC2_PUBLIC_IP
-
-sudo apt update
-sudo apt install -y ca-certificates curl gnupg lsb-release
-sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-sudo chmod a+r /etc/apt/keyrings/docker.gpg
-
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo \"$VERSION_CODENAME\") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-sudo apt update
-sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-sudo systemctl enable docker
-sudo systemctl start docker
-sudo usermod -aG docker $USER
-```
-
-Log out and log in again, then verify:
-
-```bash
-docker --version
-docker compose version
-```
-
-## 2) Pull project code
-
-```bash
-cd /home/ubuntu
-mkdir -p codebase
-cd codebase
-
-# If first deploy
-git clone https://github.com/YOUR_ORG/YOUR_REPO.git onefinancecapital
-
-# If already cloned
-cd /home/ubuntu/codebase/onefinancecapital
-git pull origin main
-```
-
-## 3) Create production env file
+## 1) Open project and update admin env values
 
 ```bash
 cd /home/ubuntu/codebase/onefinancecapital
-cp .env.example .env
 nano .env
 ```
 
-Use and update these values in `.env`:
+Set or update these values:
 
 ```env
-APP_NAME="One Capital Finance"
-APP_ENV=production
-APP_DEBUG=false
-APP_URL=https://onecapitalloans.com
-
-DB_CONNECTION=mysql
-DB_HOST=db
-DB_PORT=3306
-DB_DATABASE=geet
-DB_USERNAME=geet
-DB_PASSWORD=geet
-
-SESSION_DRIVER=database
-CACHE_STORE=database
-QUEUE_CONNECTION=database
-
-MAIL_MAILER=resend
-MAIL_FROM_ADDRESS=no-reply@onecapitalloans.com
-MAIL_FROM_NAME="One Capital Finance"
-RESEND_KEY=your_real_resend_api_key
-
 ADMIN_PANEL_USERNAME=your_admin_username
 ADMIN_PANEL_PASSWORD=your_admin_strong_password
+
+MAIL_MAILER=resend
+RESEND_KEY=your_real_resend_api_key
+MAIL_FROM_ADDRESS=no-reply@onecapitalloans.com
+MAIL_FROM_NAME="One Capital Finance"
 ```
 
-## 4) Build and start containers
+## 2) Run only admin-related migrations
 
 ```bash
 cd /home/ubuntu/codebase/onefinancecapital
-docker compose down
-docker compose up --build -d
+docker compose exec app php artisan migrate --path=database/migrations/2026_07_25_000001_create_leads_table.php --force
+docker compose exec app php artisan migrate --path=database/migrations/2026_07_25_000002_create_app_settings_table.php --force
 ```
 
-## 5) Run migrations and Laravel setup
-
-The container entrypoint already runs migration automatically. Run these once manually too for safety:
+## 3) Refresh Laravel cache
 
 ```bash
-docker compose exec app php artisan key:generate --force
-docker compose exec app php artisan migrate --force
-docker compose exec app php artisan storage:link
+cd /home/ubuntu/codebase/onefinancecapital
 docker compose exec app php artisan optimize:clear
 docker compose exec app php artisan config:cache
 docker compose exec app php artisan route:cache
 docker compose exec app php artisan view:cache
 ```
 
-## 6) Verify admin lead routes and app health
+## 4) Verify admin routes
 
 ```bash
+cd /home/ubuntu/codebase/onefinancecapital
 docker compose exec app php artisan route:list --path=admin
-docker compose ps
-docker compose logs -f app
 ```
 
-Open:
+Expected routes:
 
-- Site: `http://YOUR_EC2_PUBLIC_IP:8080`
-- Admin leads: `http://YOUR_EC2_PUBLIC_IP:8080/admin/leads`
+- `GET|HEAD admin/leads`
+- `POST admin/leads/send-to`
 
-Admin panel uses Basic Auth with:
+## 5) Open admin panel and set lead recipient
+
+Open in browser:
+
+`https://onecapitalloans.com/admin/leads`
+
+Login with Basic Auth using:
 
 - `ADMIN_PANEL_USERNAME`
 - `ADMIN_PANEL_PASSWORD`
 
-Inside admin page, set **Lead Send To** email to receive all new lead emails via Resend.
+In **Lead Send To** section:
 
-## 7) Optional host Nginx reverse proxy (domain + SSL)
+1. Add destination email address
+2. Click **Save Email**
 
-Install Nginx + Certbot:
+All new leads will then be sent to this saved email through Resend.
 
-```bash
-sudo apt install -y nginx certbot python3-certbot-nginx
-```
-
-Create site config:
-
-```bash
-sudo tee /etc/nginx/sites-available/onecapitalloans.conf > /dev/null <<'EOF'
-server {
-    listen 80;
-    server_name onecapitalloans.com www.onecapitalloans.com;
-
-    location / {
-        proxy_pass http://127.0.0.1:8080;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
-EOF
-
-sudo ln -s /etc/nginx/sites-available/onecapitalloans.conf /etc/nginx/sites-enabled/
-sudo rm -f /etc/nginx/sites-enabled/default
-sudo nginx -t
-sudo systemctl restart nginx
-sudo systemctl enable nginx
-```
-
-Issue SSL certificate:
-
-```bash
-sudo certbot --nginx -d onecapitalloans.com -d www.onecapitalloans.com
-```
-
-## 8) Update deployment commands (next releases)
+## 6) Quick test command
 
 ```bash
 cd /home/ubuntu/codebase/onefinancecapital
-git pull origin main
-docker compose down
-docker compose up --build -d
-docker compose exec app php artisan migrate --force
-docker compose exec app php artisan optimize:clear
-docker compose exec app php artisan config:cache
-docker compose exec app php artisan route:cache
-docker compose exec app php artisan view:cache
 docker compose logs -f app
 ```
 
-## 9) Security group checklist (AWS)
+Submit one test lead form from the website, then confirm:
 
-Allow inbound traffic:
-
-- TCP 22 (SSH)
-- TCP 80 (HTTP)
-- TCP 443 (HTTPS)
-- TCP 8080 (only if directly testing without host Nginx)
-
-Do not expose 3306 publicly unless you absolutely need remote MySQL access.
+- row inserted in leads table
+- lead email delivered to configured Lead Send To address
