@@ -1,0 +1,67 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: onefinancecapital-app
+    ports:
+      - "80:80"
+    environment:
+      APP_NAME: One Capital Finance
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: https://onefinancecapital.com
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: geet
+      DB_USERNAME: geet
+      DB_PASSWORD: geet
+      SESSION_DRIVER: database
+      QUEUE_CONNECTION: database
+      CACHE_STORE: database
+      MAIL_MAILER: smtp
+      MAIL_HOST: mail.onefinancecapital.com
+      MAIL_PORT: 587
+      MAIL_USERNAME: ""
+      MAIL_PASSWORD: ""
+      MAIL_FROM_ADDRESS: no-reply@onefinancecapital.com
+      MAIL_FROM_NAME: One Capital Finance
+      VITE_APP_NAME: One Capital Finance
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - laravel_storage:/var/www/html/storage
+      - laravel_bootstrap_cache:/var/www/html/bootstrap/cache
+    networks:
+      - laravel
+
+  db:
+    image: mysql:8.0
+    container_name: onefinancecapital-db
+    environment:
+      MYSQL_DATABASE: geet
+      MYSQL_USER: geet
+      MYSQL_PASSWORD: geet
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -prootpassword --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - laravel
+
+volumes:
+  mysql_data:
+  laravel_storage:
+  laravel_bootstrap_cache:
+
+networks:
+  laravel:
+    driver: bridge
