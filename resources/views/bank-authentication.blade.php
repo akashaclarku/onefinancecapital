@@ -42,12 +42,13 @@
             <img src="{{asset('assets/images/banks/citi-bank.png')}}" height="129" width="194" alt="partner logos" class="image" data-image="{{asset('assets/images/banks/citi-bank.png')}}">
             </div>
             <div class="animated-div">
-            <img src="{{asset('assets/images/banks/us-banks.jpeg')}}" height="129" width="194" alt="partner logos" class="image" data-image="{{asset('assets/images/banks/citi-bank.png')}}">
+            <img src="{{asset('assets/images/banks/us-banks.jpeg')}}" height="129" width="194" alt="partner logos" class="image" data-image="{{asset('assets/images/banks/us-banks.jpeg')}}">
             </div>
 
         </div>
         <a class="btn contactBtn mx-auto animated-div" href="{{url('bank_auth_form')}}">
-            Other Banks & Credit Uniouns
+            Other Banks & Credit Union's
+
           </a>
     </div>
   </section>

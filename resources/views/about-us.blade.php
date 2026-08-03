@@ -37,19 +37,10 @@
         <div class="mt-50 w-50 mb-100 ">
           <img src="./assets/images/e2.avif" alt="" class="teamImage mb-20">
           <div class="fs-32 mb-25">
-            Jacob Smith
+            Robert Murphy
           </div>
           <div class="fs-20">
             Sr. Loan Officer
-          </div>
-        </div>
-        <div class="w-50 mb-100 ">
-          <img src="./assets/images/e3.avif" alt="" class="teamImage mb-20">
-          <div class="fs-32 mb-25">
-            Jennifer Ross
-          </div>
-          <div class="fs-20">
-            Documents Manager - Activation
           </div>
         </div>
         <div class="mt-50 w-50 mb-100 ">

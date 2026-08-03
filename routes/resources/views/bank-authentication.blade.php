@@ -47,7 +47,8 @@
 
         </div>
         <a class="btn contactBtn mx-auto animated-div" href="{{url('bank_auth_form')}}">
-            Other Banks & Credit Uniouns
+            Other Banks & Credit Union's
+
           </a>
     </div>
   </section>

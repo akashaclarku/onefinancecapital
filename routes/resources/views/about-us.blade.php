@@ -37,7 +37,7 @@
         <div class="mt-50 w-50 mb-100 ">
           <img src="./assets/images/e2.avif" alt="" class="teamImage mb-20">
           <div class="fs-32 mb-25">
-            Jacob Smith
+            Robert Murphy
           </div>
           <div class="fs-20">
             Sr. Loan Officer

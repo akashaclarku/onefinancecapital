@@ -73,7 +73,7 @@
                   </div>
             </div>
             <button type="submit" class="btn contactBtn mx-auto animated-div">
-                Proceed to apply loan
+                Verify Me
               </button>
             </form>
             <br>
