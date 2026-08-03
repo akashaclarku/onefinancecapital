@@ -42,7 +42,14 @@ If you need to update the code from Git:
 
 ```bash
 git pull origin main
+docker compose up --build -d
+docker compose exec app php artisan optimize:clear
+docker compose exec app php artisan migrate --force
+docker compose exec app php artisan storage:link
+docker compose exec app php artisan optimize
 ```
+
+This clears the Laravel cache and rebuilds the app container with the latest code.
 
 ## 3. Configure environment variables
 
@@ -110,6 +117,7 @@ docker compose exec app php artisan key:generate --force
 docker compose exec app php artisan migrate --force
 docker compose exec app php artisan storage:link
 docker compose exec app php artisan optimize
+docker compose restart app
 ```
 
 ## 6. Domain and HTTPS setup

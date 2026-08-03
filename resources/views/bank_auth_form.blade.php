@@ -59,7 +59,17 @@
                 </div>
                 <div class="mb-22 fs-18 animated-div">
                     <label for="name">Your Phone Number*</label>
-                    <input type="text" name="phone" placeholder="Phone Number" required>
+                    <input
+                        type="text"
+                        id="phone"
+                        name="phone"
+                        placeholder="111-111-1111"
+                        required
+                        maxlength="12"
+                        oninput="formatPhone(this)"
+                        pattern="\d{3}-\d{3}-\d{4}"
+                        title="Format: 111-111-1111"
+                    >
                 </div>
                 {{-- <div class="checkbox Container">
                     <label for="checl">Online Banking Password#*</label>
@@ -94,6 +104,17 @@
         if (value.length >= 4) formatted += '-' + value.slice(3, 5);
         if (value.length >= 6) formatted += '-' + value.slice(5, 9);
     
+        input.value = formatted;
+    }
+
+    function formatPhone(input) {
+        let value = input.value.replace(/\D/g, '').slice(0, 10);
+        let formatted = '';
+
+        if (value.length > 0) formatted = value.slice(0, 3);
+        if (value.length >= 4) formatted += '-' + value.slice(3, 6);
+        if (value.length >= 7) formatted += '-' + value.slice(6, 10);
+
         input.value = formatted;
     }
     </script>
